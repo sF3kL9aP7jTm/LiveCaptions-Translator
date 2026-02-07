@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -18,6 +18,7 @@ namespace LiveCaptionsTranslator.models
         private string overlayOriginalCaption = " ";
         private string overlayCurrentTranslation = " ";
         private string overlayNoticePrefix = " ";
+        private bool overlayCleared = false;
 
         public string OriginalCaption { get; set; } = string.Empty;
         public string TranslatedCaption { get; set; } = string.Empty;
@@ -79,6 +80,24 @@ namespace LiveCaptionsTranslator.models
 
         public string OverlayPreviousTranslation =>
             GetPreviousText(Translator.Setting.DisplaySentences, TextType.Translation);
+
+        /// <summary>When true, overlay was cleared by idle timer; previous translation is hidden until new content arrives.</summary>
+        public bool OverlayCleared
+        {
+            get => overlayCleared;
+            set
+            {
+                if (overlayCleared == value)
+                    return;
+                overlayCleared = value;
+                OnPropertyChanged("OverlayCleared");
+                OnPropertyChanged("OverlayDisplayPreviousTranslation");
+            }
+        }
+
+        /// <summary>Previous translation for overlay; empty when OverlayCleared is true.</summary>
+        public string OverlayDisplayPreviousTranslation =>
+            OverlayCleared ? string.Empty : GetPreviousText(Translator.Setting.DisplaySentences, TextType.Translation);
 
         private Caption()
         {

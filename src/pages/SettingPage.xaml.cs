@@ -103,6 +103,7 @@ namespace LiveCaptionsTranslator
                 Translator.Setting.NumContexts = Translator.Setting.DisplaySentences;
             Translator.Caption.OnPropertyChanged("DisplayLogCards");
             Translator.Caption.OnPropertyChanged("OverlayPreviousTranslation");
+            Translator.Caption.OnPropertyChanged("OverlayDisplayPreviousTranslation");
         }
 
         private void LiveCaptionsInfo_MouseEnter(object sender, MouseEventArgs e)

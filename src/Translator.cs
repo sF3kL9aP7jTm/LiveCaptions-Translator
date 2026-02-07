@@ -88,6 +88,7 @@ namespace LiveCaptionsTranslator
                     continue;
                 }
                 overlayIdleCounter = 0;
+                Application.Current?.Dispatcher.InvokeAsync(() => Caption.OverlayCleared = false);
 
                 // Preprocess
                 fullText = RegexPatterns.Acronym().Replace(fullText, "$1$2");
@@ -347,6 +348,7 @@ namespace LiveCaptionsTranslator
 
             Caption?.OnPropertyChanged("DisplayLogCards");
             Caption?.OnPropertyChanged("OverlayPreviousTranslation");
+            Caption?.OnPropertyChanged("OverlayDisplayPreviousTranslation");
         }
 
         public static void ClearContexts()
@@ -355,6 +357,7 @@ namespace LiveCaptionsTranslator
 
             Caption?.OnPropertyChanged("DisplayLogCards");
             Caption?.OnPropertyChanged("OverlayPreviousTranslation");
+            Caption?.OnPropertyChanged("OverlayDisplayPreviousTranslation");
         }
 
         /// <summary>
@@ -370,6 +373,7 @@ namespace LiveCaptionsTranslator
                 Caption.OverlayOriginalCaption = string.Empty;
                 Caption.OverlayNoticePrefix = string.Empty;
                 Caption.OverlayCurrentTranslation = string.Empty;
+                Caption.OverlayCleared = true;
             });
         }
 
