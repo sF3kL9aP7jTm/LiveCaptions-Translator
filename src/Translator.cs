@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Windows;
 using System.Windows.Automation;
 
 using LiveCaptionsTranslator.apis;
@@ -363,9 +364,13 @@ namespace LiveCaptionsTranslator
         {
             if (Caption == null)
                 return;
-            Caption.OverlayOriginalCaption = " ";
-            Caption.OverlayNoticePrefix = " ";
-            Caption.OverlayCurrentTranslation = " ";
+            // Update overlay on UI thread so bindings refresh (SyncLoop runs on background thread).
+            Application.Current?.Dispatcher.InvokeAsync(() =>
+            {
+                Caption.OverlayOriginalCaption = string.Empty;
+                Caption.OverlayNoticePrefix = string.Empty;
+                Caption.OverlayCurrentTranslation = string.Empty;
+            });
         }
 
         // If this text is too similar to the last one, overwrite it when logging.

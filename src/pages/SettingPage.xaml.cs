@@ -1,6 +1,5 @@
-using System.IO;
+using System;
 using System.Reflection;
-using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -8,6 +7,7 @@ using Wpf.Ui.Appearance;
 
 using LiveCaptionsTranslator.models;
 using LiveCaptionsTranslator.utils;
+using LiveCaptionsTranslator.Utils;
 using Wpf.Ui.Controls;
 
 namespace LiveCaptionsTranslator
@@ -26,23 +26,18 @@ namespace LiveCaptionsTranslator
             {
                 (App.Current.MainWindow as MainWindow)?.AutoHeightAdjust(maxHeight: (int)App.Current.MainWindow.MinHeight);
                 CheckForFirstUse();
-                // #region agent log
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    try
-                    {
-                        var settingVal = Translator.Setting?.OverlayClearIdleSeconds ?? -999;
-                        var boxVal = OverlayClearIdleSecondsBox?.Value ?? double.NaN;
-                        var line = JsonSerializer.Serialize(new { hypothesisId = "H1", location = "SettingPage.xaml.cs:Loaded", message = "Overlay timeout UI load", data = new { SettingOverlayClearIdleSeconds = settingVal, NumberBoxValue = boxVal, NumberBoxWidth = OverlayClearIdleSecondsBox?.ActualWidth ?? -1 }, timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }) + "\n";
-                        File.AppendAllText(@"p:\codehlam\123\LiveCaptions-Translator\.cursor\debug.log", line);
-                    }
-                    catch { }
+                    if (Translator.Setting != null && OverlayClearIdleSecondsBox != null)
+                        OverlayClearIdleSecondsBox.Value = Translator.Setting.OverlayClearIdleSeconds;
                 }), System.Windows.Threading.DispatcherPriority.Loaded);
-                // #endregion
             };
 
             TranslateAPIBox.ItemsSource = Translator.Setting?.Configs.Keys;
             TranslateAPIBox.SelectedIndex = 0;
+
+            OverlayFontColorBox.ItemsSource = Enum.GetValues(typeof(Color));
+            OverlayBackgroundColorBox.ItemsSource = Enum.GetValues(typeof(Color));
 
             LoadAPISetting();
         }

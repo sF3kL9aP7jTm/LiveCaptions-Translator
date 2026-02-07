@@ -294,7 +294,7 @@
                     <TextBlock Margin="0,0,5,0" VerticalAlignment="Center" Text="Timeout (sec):" />
                     <ui:NumberBox
                         x:Name="OverlayClearIdleSecondsBox"
-                        Width="60"
+                        Width="85"
                         Height="30"
                         Padding="10,4,10,7"
                         FontSize="13.3"
@@ -306,6 +306,28 @@
                         LargeChange="5"
                         SmallChange="1"
                         Value="{Binding OverlayClearIdleSeconds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Margin="15,10,0,0" Orientation="Vertical">
+                <TextBlock Margin="2.5,0,0,5" Text="Overlay window" />
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,5,0,0">
+                    <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" Text="Text color:" />
+                    <ComboBox
+                        x:Name="OverlayFontColorBox"
+                        Width="120"
+                        Height="30"
+                        FontSize="13.3"
+                        SelectedItem="{Binding OverlayWindow.FontColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,5,0,0">
+                    <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" Text="Background color:" />
+                    <ComboBox
+                        x:Name="OverlayBackgroundColorBox"
+                        Width="120"
+                        Height="30"
+                        FontSize="13.3"
+                        SelectedItem="{Binding OverlayWindow.BackgroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
             </StackPanel>
         </StackPanel>

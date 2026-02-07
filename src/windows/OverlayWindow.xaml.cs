@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -47,8 +47,16 @@ namespace LiveCaptionsTranslator
             InitializeComponent();
             DataContext = Translator.Caption;
 
-            Loaded += (s, e) => Translator.Caption.PropertyChanged += TranslatedChanged;
-            Unloaded += (s, e) => Translator.Caption.PropertyChanged -= TranslatedChanged;
+            Loaded += (s, e) =>
+            {
+                Translator.Caption.PropertyChanged += TranslatedChanged;
+                Translator.Setting.OverlayWindow.PropertyChanged += OverlaySetting_PropertyChanged;
+            };
+            Unloaded += (s, e) =>
+            {
+                Translator.Caption.PropertyChanged -= TranslatedChanged;
+                Translator.Setting.OverlayWindow.PropertyChanged -= OverlaySetting_PropertyChanged;
+            };
 
             OriginalCaption.FontWeight = Translator.Setting.OverlayWindow.FontBold == Utils.FontBold.Both ?
                 FontWeights.Bold : FontWeights.Regular;
@@ -66,6 +74,29 @@ namespace LiveCaptionsTranslator
 
             ApplyFontSize();
             ApplyBackgroundOpacity();
+        }
+
+        private void OverlaySetting_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != nameof(Translator.Setting.OverlayWindow.FontColor) &&
+                e.PropertyName != nameof(Translator.Setting.OverlayWindow.BackgroundColor))
+                return;
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                if (Translator.Setting == null) return;
+                var ow = Translator.Setting.OverlayWindow;
+                if (e.PropertyName == nameof(ow.FontColor))
+                {
+                    OriginalCaption.Foreground = colorMap[ow.FontColor];
+                    TranslatedCaption.Foreground = colorMap[ow.FontColor];
+                    UpdateTranslationColor(colorMap[ow.FontColor]);
+                }
+                else if (e.PropertyName == nameof(ow.BackgroundColor))
+                {
+                    BorderBackground.Background = colorMap[ow.BackgroundColor];
+                    ApplyBackgroundOpacity();
+                }
+            }));
         }
 
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

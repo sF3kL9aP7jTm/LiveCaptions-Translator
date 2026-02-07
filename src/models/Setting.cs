@@ -77,14 +77,6 @@ namespace LiveCaptionsTranslator.models
             get => overlayClearIdleSeconds;
             set
             {
-                // #region agent log
-                try
-                {
-                    var line = System.Text.Json.JsonSerializer.Serialize(new { hypothesisId = "H2", location = "Setting.cs:OverlayClearIdleSeconds set", message = "setter called", data = new { rawValue = value, clamped = Math.Clamp(value, 1, 120) }, timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }) + "\n";
-                    System.IO.File.AppendAllText(@"p:\codehlam\123\LiveCaptions-Translator\.cursor\debug.log", line);
-                }
-                catch { }
-                // #endregion
                 overlayClearIdleSeconds = Math.Clamp(value, 1, 120);
                 OnPropertyChanged("OverlayClearIdleSeconds");
             }
@@ -273,13 +265,16 @@ namespace LiveCaptionsTranslator.models
                     var options = new JsonSerializerOptions
                     {
                         WriteIndented = true,
-                        Converters = { new ConfigDictConverter() }
+                        Converters = { new ConfigDictConverter(), new JsonStringEnumConverter() }
                     };
                     setting = JsonSerializer.Deserialize<Setting>(fileStream, options) ?? new Setting();
                 }
             }
             else
                 setting = new Setting();
+
+            if (setting.OverlayWindow == null)
+                setting.OverlayWindow = new OverlayWindowState();
 
             // Ensure all required API configs are present
             foreach (string key in TranslateAPI.TRANSLATE_FUNCTIONS.Keys)
@@ -308,7 +303,7 @@ namespace LiveCaptionsTranslator.models
                 var options = new JsonSerializerOptions
                 {
                     WriteIndented = true,
-                    Converters = { new ConfigDictConverter() }
+                    Converters = { new ConfigDictConverter(), new JsonStringEnumConverter() }
                 };
                 JsonSerializer.Serialize(fileStream, this, options);
             }
