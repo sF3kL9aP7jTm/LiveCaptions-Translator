@@ -77,6 +77,14 @@ namespace LiveCaptionsTranslator.models
             get => overlayClearIdleSeconds;
             set
             {
+                // #region agent log
+                try
+                {
+                    var line = System.Text.Json.JsonSerializer.Serialize(new { hypothesisId = "H2", location = "Setting.cs:OverlayClearIdleSeconds set", message = "setter called", data = new { rawValue = value, clamped = Math.Clamp(value, 1, 120) }, timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }) + "\n";
+                    System.IO.File.AppendAllText(@"p:\codehlam\123\LiveCaptions-Translator\.cursor\debug.log", line);
+                }
+                catch { }
+                // #endregion
                 overlayClearIdleSeconds = Math.Clamp(value, 1, 120);
                 OnPropertyChanged("OverlayClearIdleSeconds");
             }
