@@ -4,11 +4,39 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:LiveCaptionsTranslator"
+    xmlns:converters="clr-namespace:LiveCaptionsTranslator.converters"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     Title="SettingPage"
     JournalEntry.KeepAlive="False"
     mc:Ignorable="d">
+
+    <Page.Resources>
+        <converters:OverlayColorToBrushConverter x:Key="OverlayColorToBrush" />
+        <Style x:Key="ColorPaletteItem" TargetType="ListBoxItem">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border
+                            x:Name="ColorBorder"
+                            Width="28"
+                            Height="28"
+                            Margin="2"
+                            Background="{Binding Converter={StaticResource OverlayColorToBrush}}"
+                            BorderBrush="#666"
+                            BorderThickness="1"
+                            Cursor="Hand" />
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="ColorBorder" Property="BorderThickness" Value="3" />
+                                <Setter TargetName="ColorBorder" Property="BorderBrush" Value="#0a84ff" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
 
     <Grid Margin="15">
         <Grid.ColumnDefinitions>
@@ -313,21 +341,75 @@
                 <TextBlock Margin="2.5,0,0,5" Text="Overlay window" />
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,5,0,0">
                     <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" Text="Text color:" />
-                    <ComboBox
-                        x:Name="OverlayFontColorBox"
-                        Width="120"
-                        Height="30"
-                        FontSize="13.3"
-                        SelectedItem="{Binding OverlayWindow.FontColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <ListBox
+                        x:Name="OverlayFontColorPalette"
+                        Width="260"
+                        Height="36"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        ItemContainerStyle="{StaticResource ColorPaletteItem}"
+                        ItemsSource="{Binding Source={x:Static local:SettingPage.OverlayColors}}"
+                        SelectedItem="{Binding OverlayWindow.FontColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                    </ListBox>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,5,0,0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,8,0,0">
                     <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" Text="Background color:" />
-                    <ComboBox
-                        x:Name="OverlayBackgroundColorBox"
-                        Width="120"
-                        Height="30"
-                        FontSize="13.3"
-                        SelectedItem="{Binding OverlayWindow.BackgroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <ListBox
+                        x:Name="OverlayBackgroundColorPalette"
+                        Width="260"
+                        Height="36"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        ItemContainerStyle="{StaticResource ColorPaletteItem}"
+                        ItemsSource="{Binding Source={x:Static local:SettingPage.OverlayColors}}"
+                        SelectedItem="{Binding OverlayWindow.BackgroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                    </ListBox>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,8,0,0">
+                    <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" Text="Previous translation color:" />
+                    <ListBox
+                        x:Name="OverlayTranslationPreviousColorPalette"
+                        Width="260"
+                        Height="36"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        ItemContainerStyle="{StaticResource ColorPaletteItem}"
+                        ItemsSource="{Binding Source={x:Static local:SettingPage.OverlayColors}}"
+                        SelectedItem="{Binding OverlayWindow.TranslationPreviousColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                    </ListBox>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,8,0,0">
+                    <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" Text="Current translation color:" />
+                    <ListBox
+                        x:Name="OverlayTranslationCurrentColorPalette"
+                        Width="260"
+                        Height="36"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        ItemContainerStyle="{StaticResource ColorPaletteItem}"
+                        ItemsSource="{Binding Source={x:Static local:SettingPage.OverlayColors}}"
+                        SelectedItem="{Binding OverlayWindow.TranslationCurrentColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                    </ListBox>
                 </StackPanel>
             </StackPanel>
         </StackPanel>

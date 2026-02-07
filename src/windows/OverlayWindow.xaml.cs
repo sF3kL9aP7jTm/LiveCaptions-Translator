@@ -67,7 +67,7 @@ namespace LiveCaptionsTranslator
             TranslatedCaptionDecorator.StrokeThickness = Translator.Setting.OverlayWindow.FontStroke;
 
             OriginalCaption.Foreground = colorMap[Translator.Setting.OverlayWindow.FontColor];
-            UpdateTranslationColor(colorMap[Translator.Setting.OverlayWindow.FontColor]);
+            ApplyTranslationColors();
 
             BorderBackground.Background = colorMap[Translator.Setting.OverlayWindow.BackgroundColor];
             BorderBackground.Opacity = Translator.Setting.OverlayWindow.Opacity;
@@ -78,23 +78,28 @@ namespace LiveCaptionsTranslator
 
         private void OverlaySetting_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName != nameof(Translator.Setting.OverlayWindow.FontColor) &&
-                e.PropertyName != nameof(Translator.Setting.OverlayWindow.BackgroundColor))
+            string? name = e.PropertyName;
+            if (name != nameof(Translator.Setting.OverlayWindow.FontColor) &&
+                name != nameof(Translator.Setting.OverlayWindow.BackgroundColor) &&
+                name != nameof(Translator.Setting.OverlayWindow.TranslationPreviousColor) &&
+                name != nameof(Translator.Setting.OverlayWindow.TranslationCurrentColor))
                 return;
             Dispatcher.BeginInvoke(new Action(() =>
             {
                 if (Translator.Setting == null) return;
                 var ow = Translator.Setting.OverlayWindow;
-                if (e.PropertyName == nameof(ow.FontColor))
+                if (name == nameof(ow.FontColor))
                 {
                     OriginalCaption.Foreground = colorMap[ow.FontColor];
-                    TranslatedCaption.Foreground = colorMap[ow.FontColor];
-                    UpdateTranslationColor(colorMap[ow.FontColor]);
                 }
-                else if (e.PropertyName == nameof(ow.BackgroundColor))
+                else if (name == nameof(ow.BackgroundColor))
                 {
                     BorderBackground.Background = colorMap[ow.BackgroundColor];
                     ApplyBackgroundOpacity();
+                }
+                else if (name == nameof(ow.TranslationPreviousColor) || name == nameof(ow.TranslationCurrentColor))
+                {
+                    ApplyTranslationColors();
                 }
             }));
         }
@@ -252,8 +257,6 @@ namespace LiveCaptionsTranslator
             if (Translator.Setting.OverlayWindow.FontColor > ColorEnum.Black)
                 Translator.Setting.OverlayWindow.FontColor = ColorEnum.White;
             OriginalCaption.Foreground = colorMap[Translator.Setting.OverlayWindow.FontColor];
-            TranslatedCaption.Foreground = colorMap[Translator.Setting.OverlayWindow.FontColor];
-            UpdateTranslationColor(colorMap[Translator.Setting.OverlayWindow.FontColor]);
         }
 
         private void BackgroundOpacityIncrease_Click(object sender, RoutedEventArgs e)
@@ -388,18 +391,15 @@ namespace LiveCaptionsTranslator
                 (byte)Translator.Setting.OverlayWindow.Opacity, color.R, color.G, color.B));
         }
 
-        private void UpdateTranslationColor(SolidColorBrush brush)
+        private void ApplyTranslationColors()
         {
-            var color = brush.Color;
-
-            double target = 0.299 * color.R + 0.587 * color.G + 0.114 * color.B > 127 ? 0 : 255;
-            byte r = (byte)Math.Clamp(color.R + (target - color.R) * 0.3, 0, 255);
-            byte g = (byte)Math.Clamp(color.G + (target - color.G) * 0.4, 0, 255);
-            byte b = (byte)Math.Clamp(color.B + (target - color.B) * 0.3, 0, 255);
-
-            NoticePrefixRun.Foreground = brush;
-            PreviousTranslationRun.Foreground = brush;
-            CurrentTranslationRun.Foreground = new SolidColorBrush(Color.FromRgb(r, g, b));
+            if (Translator.Setting == null) return;
+            var ow = Translator.Setting.OverlayWindow;
+            var previousBrush = colorMap[ow.TranslationPreviousColor];
+            var currentBrush = colorMap[ow.TranslationCurrentColor];
+            NoticePrefixRun.Foreground = previousBrush;
+            PreviousTranslationRun.Foreground = previousBrush;
+            CurrentTranslationRun.Foreground = currentBrush;
         }
     }
 }

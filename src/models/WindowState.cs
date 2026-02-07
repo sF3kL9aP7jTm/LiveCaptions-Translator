@@ -57,6 +57,8 @@ namespace LiveCaptionsTranslator.models
         private double fontStroke = 0.0;
 
         private Color backgroundColor = Color.Black;
+        private Color translationPreviousColor = Color.White;
+        private Color translationCurrentColor = Color.White;
         private int opacity = 150;
 
         public int FontSize
@@ -102,6 +104,26 @@ namespace LiveCaptionsTranslator.models
             {
                 backgroundColor = value;
                 OnPropertyChanged("BackgroundColor");
+            }
+        }
+        /// <summary>Color for previous translation and notice prefix on overlay.</summary>
+        public Color TranslationPreviousColor
+        {
+            get => translationPreviousColor;
+            set
+            {
+                translationPreviousColor = value;
+                OnPropertyChanged("TranslationPreviousColor");
+            }
+        }
+        /// <summary>Color for current translation on overlay.</summary>
+        public Color TranslationCurrentColor
+        {
+            get => translationCurrentColor;
+            set
+            {
+                translationCurrentColor = value;
+                OnPropertyChanged("TranslationCurrentColor");
             }
         }
         public int Opacity

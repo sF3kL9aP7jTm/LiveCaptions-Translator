@@ -16,6 +16,9 @@ namespace LiveCaptionsTranslator
     {
         private static SettingWindow? SettingWindow;
 
+        /// <summary>Color palette for overlay text and background (used by ListBox ItemsSource).</summary>
+        public static Color[] OverlayColors { get; } = (Color[])Enum.GetValues(typeof(Color));
+
         public SettingPage()
         {
             InitializeComponent();
@@ -35,9 +38,6 @@ namespace LiveCaptionsTranslator
 
             TranslateAPIBox.ItemsSource = Translator.Setting?.Configs.Keys;
             TranslateAPIBox.SelectedIndex = 0;
-
-            OverlayFontColorBox.ItemsSource = Enum.GetValues(typeof(Color));
-            OverlayBackgroundColorBox.ItemsSource = Enum.GetValues(typeof(Color));
 
             LoadAPISetting();
         }
