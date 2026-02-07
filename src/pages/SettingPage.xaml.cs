@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -153,6 +153,16 @@ namespace LiveCaptionsTranslator
         private void ContextAwareInfo_MouseLeave(object sender, MouseEventArgs e)
         {
             ContextAwareInfoFlyout.Hide();
+        }
+
+        private void OverlayClearIdleInfo_MouseEnter(object sender, MouseEventArgs e)
+        {
+            OverlayClearIdleInfoFlyout.Show();
+        }
+
+        private void OverlayClearIdleInfo_MouseLeave(object sender, MouseEventArgs e)
+        {
+            OverlayClearIdleInfoFlyout.Hide();
         }
 
         private void CheckForFirstUse()

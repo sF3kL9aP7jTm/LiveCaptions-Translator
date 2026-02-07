@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -19,6 +19,8 @@ namespace LiveCaptionsTranslator.models
         private int maxSyncInterval = 3;
         private int numContexts = 2;
         private int displaySentences = 1;
+        private bool overlayClearAfterIdle = false;
+        private int overlayClearIdleSeconds = 5;
         private bool contextAware = false;
 
         private string apiName;
@@ -59,6 +61,24 @@ namespace LiveCaptionsTranslator.models
             {
                 displaySentences = value;
                 OnPropertyChanged("DisplaySentences");
+            }
+        }
+        public bool OverlayClearAfterIdle
+        {
+            get => overlayClearAfterIdle;
+            set
+            {
+                overlayClearAfterIdle = value;
+                OnPropertyChanged("OverlayClearAfterIdle");
+            }
+        }
+        public int OverlayClearIdleSeconds
+        {
+            get => overlayClearIdleSeconds;
+            set
+            {
+                overlayClearIdleSeconds = Math.Clamp(value, 1, 120);
+                OnPropertyChanged("OverlayClearIdleSeconds");
             }
         }
         public bool ContextAware

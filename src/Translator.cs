@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows.Automation;
@@ -17,6 +17,7 @@ namespace LiveCaptionsTranslator
 
         private static readonly Queue<string> pendingTextQueue = new();
         private static readonly TranslationTaskQueue translationTaskQueue = new();
+        private static int overlayIdleCounter = 0;
 
         public static AutomationElement? Window
         {
@@ -72,7 +73,20 @@ namespace LiveCaptionsTranslator
                     continue;
                 }
                 if (string.IsNullOrEmpty(fullText))
+                {
+                    if (Setting.OverlayClearAfterIdle && Setting.OverlayClearIdleSeconds > 0)
+                    {
+                        overlayIdleCounter++;
+                        if (overlayIdleCounter * 25 >= Setting.OverlayClearIdleSeconds * 1000)
+                        {
+                            ClearOverlayDisplay();
+                            overlayIdleCounter = 0;
+                        }
+                    }
+                    Thread.Sleep(25);
                     continue;
+                }
+                overlayIdleCounter = 0;
 
                 // Preprocess
                 fullText = RegexPatterns.Acronym().Replace(fullText, "$1$2");
@@ -340,6 +354,18 @@ namespace LiveCaptionsTranslator
 
             Caption?.OnPropertyChanged("DisplayLogCards");
             Caption?.OnPropertyChanged("OverlayPreviousTranslation");
+        }
+
+        /// <summary>
+        /// Clears overlay window subtitles when no new captions for a while (if OverlayClearAfterIdle is enabled).
+        /// </summary>
+        public static void ClearOverlayDisplay()
+        {
+            if (Caption == null)
+                return;
+            Caption.OverlayOriginalCaption = " ";
+            Caption.OverlayNoticePrefix = " ";
+            Caption.OverlayCurrentTranslation = " ";
         }
 
         // If this text is too similar to the last one, overwrite it when logging.
