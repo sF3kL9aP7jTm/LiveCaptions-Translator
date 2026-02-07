@@ -78,17 +78,33 @@ namespace LiveCaptionsTranslator
                     if (Setting.OverlayClearAfterIdle && Setting.OverlayClearIdleSeconds > 0)
                     {
                         overlayIdleCounter++;
+                        // Update debug countdown about once per second (40 * 25ms)
+                        if (Setting.OverlayClearDebugCountdown && overlayIdleCounter % 40 == 0)
+                        {
+                            int remaining = Setting.OverlayClearIdleSeconds - (overlayIdleCounter * 25 / 1000);
+                            Application.Current?.Dispatcher.Invoke(() =>
+                                Caption.OverlayClearRemainingSeconds = Math.Max(0, remaining));
+                        }
                         if (overlayIdleCounter * 25 >= Setting.OverlayClearIdleSeconds * 1000)
                         {
                             ClearOverlayDisplay();
                             overlayIdleCounter = 0;
                         }
                     }
+                    else
+                    {
+                        if (Setting.OverlayClearDebugCountdown)
+                            Application.Current?.Dispatcher.Invoke(() => Caption.OverlayClearRemainingSeconds = -1);
+                    }
                     Thread.Sleep(25);
                     continue;
                 }
                 overlayIdleCounter = 0;
-                Application.Current?.Dispatcher.InvokeAsync(() => Caption.OverlayCleared = false);
+                Application.Current?.Dispatcher.Invoke(() =>
+                {
+                    Caption.OverlayCleared = false;
+                    Caption.OverlayClearRemainingSeconds = -1;
+                });
 
                 // Preprocess
                 fullText = RegexPatterns.Acronym().Replace(fullText, "$1$2");
@@ -367,13 +383,16 @@ namespace LiveCaptionsTranslator
         {
             if (Caption == null)
                 return;
-            // Update overlay on UI thread so bindings refresh (SyncLoop runs on background thread).
-            Application.Current?.Dispatcher.InvokeAsync(() =>
+            // Update overlay on UI thread synchronously so bindings refresh (SyncLoop runs on background thread).
+            Application.Current?.Dispatcher.Invoke(() =>
             {
                 Caption.OverlayOriginalCaption = string.Empty;
                 Caption.OverlayNoticePrefix = string.Empty;
                 Caption.OverlayCurrentTranslation = string.Empty;
                 Caption.OverlayCleared = true;
+                Caption.OverlayClearRemainingSeconds = -1;
+                // Force bindings to refresh (OverlayDisplayPreviousTranslation is computed)
+                Caption.OnPropertyChanged("OverlayDisplayPreviousTranslation");
             });
         }
 

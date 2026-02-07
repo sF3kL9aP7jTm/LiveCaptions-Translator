@@ -335,6 +335,17 @@
                         SmallChange="1"
                         Value="{Binding OverlayClearIdleSeconds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,5,0,0">
+                    <ui:ToggleSwitch
+                        Width="90"
+                        Height="30"
+                        Padding="10,4,10,7"
+                        Margin="0,0,10,0"
+                        IsChecked="{Binding OverlayClearDebugCountdown, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        OffContent="Off"
+                        OnContent="On" />
+                    <TextBlock Margin="0,0,5,0" VerticalAlignment="Center" Text="Show clear countdown (debug)" />
+                </StackPanel>
             </StackPanel>
 
             <StackPanel Margin="15,10,0,0" Orientation="Vertical">

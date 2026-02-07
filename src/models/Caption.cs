@@ -19,6 +19,7 @@ namespace LiveCaptionsTranslator.models
         private string overlayCurrentTranslation = " ";
         private string overlayNoticePrefix = " ";
         private bool overlayCleared = false;
+        private int overlayClearRemainingSeconds = -1;
 
         public string OriginalCaption { get; set; } = string.Empty;
         public string TranslatedCaption { get; set; } = string.Empty;
@@ -98,6 +99,19 @@ namespace LiveCaptionsTranslator.models
         /// <summary>Previous translation for overlay; empty when OverlayCleared is true.</summary>
         public string OverlayDisplayPreviousTranslation =>
             OverlayCleared ? string.Empty : GetPreviousText(Translator.Setting.DisplaySentences, TextType.Translation);
+
+        /// <summary>Debug: seconds until overlay is cleared when idle; -1 when not counting.</summary>
+        public int OverlayClearRemainingSeconds
+        {
+            get => overlayClearRemainingSeconds;
+            set
+            {
+                if (overlayClearRemainingSeconds == value)
+                    return;
+                overlayClearRemainingSeconds = value;
+                OnPropertyChanged("OverlayClearRemainingSeconds");
+            }
+        }
 
         private Caption()
         {

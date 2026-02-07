@@ -93,6 +93,17 @@
                     </local:StrokeDecorator>
                 </ui:Card>
 
+                <TextBlock
+                    x:Name="OverlayClearCountdownText"
+                    Grid.Row="1"
+                    Margin="0,0,80,8"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    FontSize="11"
+                    Foreground="#80FFFFFF"
+                    Visibility="Collapsed"
+                    Text="" />
+
                 <StackPanel
                     x:Name="ControlPanel"
                     Grid.Row="1"

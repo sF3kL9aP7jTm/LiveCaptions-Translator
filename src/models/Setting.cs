@@ -21,6 +21,7 @@ namespace LiveCaptionsTranslator.models
         private int displaySentences = 1;
         private bool overlayClearAfterIdle = false;
         private int overlayClearIdleSeconds = 5;
+        private bool overlayClearDebugCountdown = false;
         private bool contextAware = false;
 
         private string apiName;
@@ -79,6 +80,15 @@ namespace LiveCaptionsTranslator.models
             {
                 overlayClearIdleSeconds = Math.Clamp(value, 1, 120);
                 OnPropertyChanged("OverlayClearIdleSeconds");
+            }
+        }
+        public bool OverlayClearDebugCountdown
+        {
+            get => overlayClearDebugCountdown;
+            set
+            {
+                overlayClearDebugCountdown = value;
+                OnPropertyChanged("OverlayClearDebugCountdown");
             }
         }
         public bool ContextAware

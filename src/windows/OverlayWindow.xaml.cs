@@ -50,11 +50,17 @@ namespace LiveCaptionsTranslator
             Loaded += (s, e) =>
             {
                 Translator.Caption.PropertyChanged += TranslatedChanged;
+                Translator.Caption.PropertyChanged += Caption_PropertyChangedForOverlay;
+                Translator.Setting.PropertyChanged += Setting_PropertyChangedForOverlay;
                 Translator.Setting.OverlayWindow.PropertyChanged += OverlaySetting_PropertyChanged;
+                RefreshOverlayBindings();
+                UpdateClearCountdownDisplay();
             };
             Unloaded += (s, e) =>
             {
                 Translator.Caption.PropertyChanged -= TranslatedChanged;
+                Translator.Caption.PropertyChanged -= Caption_PropertyChangedForOverlay;
+                Translator.Setting.PropertyChanged -= Setting_PropertyChangedForOverlay;
                 Translator.Setting.OverlayWindow.PropertyChanged -= OverlaySetting_PropertyChanged;
             };
 
@@ -179,6 +185,46 @@ namespace LiveCaptionsTranslator
         private void TranslatedChanged(object sender, PropertyChangedEventArgs e)
         {
             ApplyFontSize();
+        }
+
+        /// <summary>Refreshes overlay text from current Caption state (fixes empty overlay when opening window).</summary>
+        private void RefreshOverlayBindings()
+        {
+            if (Translator.Caption == null) return;
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                Translator.Caption.OnPropertyChanged("OverlayOriginalCaption");
+                Translator.Caption.OnPropertyChanged("OverlayNoticePrefix");
+                Translator.Caption.OnPropertyChanged("OverlayCurrentTranslation");
+                Translator.Caption.OnPropertyChanged("OverlayCleared");
+                Translator.Caption.OnPropertyChanged("OverlayDisplayPreviousTranslation");
+            }), DispatcherPriority.Loaded);
+        }
+
+        private void Caption_PropertyChangedForOverlay(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "OverlayClearRemainingSeconds")
+                UpdateClearCountdownDisplay();
+        }
+
+        private void Setting_PropertyChangedForOverlay(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "OverlayClearDebugCountdown")
+                UpdateClearCountdownDisplay();
+        }
+
+        private void UpdateClearCountdownDisplay()
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                if (OverlayClearCountdownText == null) return;
+                bool show = Translator.Setting?.OverlayClearDebugCountdown == true &&
+                            Translator.Caption?.OverlayClearRemainingSeconds >= 0;
+                OverlayClearCountdownText.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
+                OverlayClearCountdownText.Text = show
+                    ? $"Clear in: {Translator.Caption!.OverlayClearRemainingSeconds} s"
+                    : "";
+            }), DispatcherPriority.Background);
         }
 
         private void Window_MouseEnter(object sender, MouseEventArgs e)
